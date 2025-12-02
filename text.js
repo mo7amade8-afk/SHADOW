@@ -1,4 +1,4 @@
 export default {
-    "hello": "how are you?",
-    "سلام": "أهلاً! كيف أساعدك؟"
+  hello: "how are you",
+  hi: "welcome"
 };
