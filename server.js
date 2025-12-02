@@ -39,13 +39,13 @@ app.post("/webhook", async (req, res) => {
     const text = msg.text?.trim();
 
     if (text === "/start") {
-      return sendMessage(chatId, "Bot is ready 👑");
+      return sendMessage(chatId, "Bot is ready");
     }
 
-    if (images[text]) return sendPhoto(chatId, images[text]);
-    if (texts[text]) return sendMessage(chatId, texts[text]);
+    if (image[text]) return sendPhoto(chatId, image[text]);
+    if (text[text]) return sendMessage(chatId, text[text]);
 
-    sendMessage(chatId, "Unknown command 👑");
+    sendMessage(chatId, "Unknown command");
   } catch (e) {
     console.log("Error:", e);
   }
