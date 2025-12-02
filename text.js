@@ -1,4 +1,4 @@
 export default {
-  "text": "This is the first message.",
-  "👑text2": "This is the second text."
+  hello: "how are you",
+  hi: "welcome"
 };
