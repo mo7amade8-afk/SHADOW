@@ -5,8 +5,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-import images from "./image.js";
-import texts from "./text.js";
+import image from "./image.js";
+import text from "./text.js";
 
 const app = express();
 app.use(bodyParser.json());
