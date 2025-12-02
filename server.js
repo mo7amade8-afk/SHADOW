@@ -5,23 +5,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+import image from "./image.js";
+import texts from "./text.js";   // مهم جداً
+
 const app = express();
 app.use(bodyParser.json());
 
 const TOKEN = process.env.BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOKEN}/`;
-
-// محتويات image.js
-const image = {
-  جلجامشة: "https://github.com/جلجامشة.jpg",
-  dog: "https://github.com/جلجامشة.jpg"
-};
-
-// محتويات text.js
-const texts = {
-  hello: "Hello, welcome!",
-  info: "This is information message."
-};
 
 async function sendMessage(chatId, text) {
   await axios.post(API + "sendMessage", {
@@ -45,18 +36,18 @@ app.post("/webhook", async (req, res) => {
     if (!msg) return;
 
     const chatId = msg.chat.id;
-    const userText = msg.text?.trim();
+    const text = msg.text?.trim();
 
-    if (userText === "/start") {
+    if (text === "/start") {
       return sendMessage(chatId, "Bot is ready");
     }
 
-    if (image[userText]) return sendPhoto(chatId, image[userText]);
-    if (texts[userText]) return sendMessage(chatId, texts[userText]);
+    if (image[text]) return sendPhoto(chatId, image[text]);
+    if (texts[text]) return sendMessage(chatId, texts[text]);
 
-    return sendMessage(chatId, "Unknown command");
-  } catch (err) {
-    console.log("Error:", err);
+    sendMessage(chatId, "Unknown command");
+  } catch (e) {
+    console.log("Error:", e);
   }
 });
 
