@@ -2,11 +2,11 @@ import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-
 dotenv.config();
 
+// Data files
 import image from "./image.js";
-import text from "./text.js";
+import textData from "./text.js";
 import video from "./video.js";
 import audio from "./audio.js";
 import file from "./file.js";
@@ -17,10 +17,10 @@ app.use(bodyParser.json());
 const TOKEN = process.env.BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOKEN}/`;
 
-async function sendMessage(chatId, message) {
+async function sendMessage(chatId, text) {
   await axios.post(API + "sendMessage", {
     chat_id: chatId,
-    text: message
+    text: text
   });
 }
 
@@ -63,16 +63,16 @@ app.post("/webhook", async (req, res) => {
     const userText = msg.text?.trim();
 
     if (userText === "/start") {
-      return sendMessage(chatId, "Bot is ready.");
+      return sendMessage(chatId, "Bot is ready");
     }
 
     if (image[userText]) return sendPhoto(chatId, image[userText]);
-    if (text[userText]) return sendMessage(chatId, text[userText]);
+    if (textData[userText]) return sendMessage(chatId, textData[userText]);
     if (video[userText]) return sendVideo(chatId, video[userText]);
     if (audio[userText]) return sendAudio(chatId, audio[userText]);
     if (file[userText]) return sendFile(chatId, file[userText]);
 
-    sendMessage(chatId, "Unknown command.");
+    sendMessage(chatId, "Unknown command");
   } catch (e) {
     console.log("Error:", e);
   }
