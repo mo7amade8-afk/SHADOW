@@ -13,7 +13,7 @@ const API = `https://api.telegram.org/bot${TOKEN}/`;
 
 // محتويات image.js
 const image = {
-  cat: "https://example.com/cat.jpg",
+  جلجامشة: "https://example.com/جلجامشة.jpg",
   dog: "https://example.com/dog.jpg"
 };
 
