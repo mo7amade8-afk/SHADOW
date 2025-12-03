@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// استيراد الملفات
+// 
 import images from "./image.js";
 import texts from "./text.js";
 import videos from "./video.js";
@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 const TOKEN = process.env.BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOKEN}/`;
 
-// إرسال رسالة
+// 
 async function sendMessage(chatId, text) {
   await axios.post(API + "sendMessage", {
     chat_id: chatId,
@@ -26,7 +26,7 @@ async function sendMessage(chatId, text) {
   });
 }
 
-// إرسال صورة
+// 
 async function sendPhoto(chatId, url) {
   await axios.post(API + "sendPhoto", {
     chat_id: chatId,
@@ -34,7 +34,7 @@ async function sendPhoto(chatId, url) {
   });
 }
 
-// إرسال فيديو
+// 
 async function sendVideo(chatId, url) {
   await axios.post(API + "sendVideo", {
     chat_id: chatId,
@@ -42,7 +42,7 @@ async function sendVideo(chatId, url) {
   });
 }
 
-// إرسال صوت
+// 
 async function sendAudio(chatId, url) {
   await axios.post(API + "sendAudio", {
     chat_id: chatId,
@@ -50,7 +50,7 @@ async function sendAudio(chatId, url) {
   });
 }
 
-// إرسال ملف
+// 
 async function sendDocument(chatId, url) {
   await axios.post(API + "sendDocument", {
     chat_id: chatId,
@@ -60,10 +60,10 @@ async function sendDocument(chatId, url) {
 
 
 // =====================================================
-//  تكوين قائمة الأوامر ديناميكياً
+//  
 // =====================================================
 
-// جميع الأوامر من جميع الملفات
+// 
 const ALL_COMMANDS = {
   ...images,
   ...texts,
@@ -72,10 +72,10 @@ const ALL_COMMANDS = {
   ...files
 };
 
-// أسماء الأوامر فقط
+// 
 const commandKeys = Object.keys(ALL_COMMANDS);
 
-// تقسيم القوائم، كل 5 أوامر في قائمة
+// 
 function getMenuPage(page = 1) {
   const perPage = 5;
   const start = (page - 1) * perPage;
@@ -87,6 +87,7 @@ function getMenuPage(page = 1) {
 
   let text = `
 ★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★
+👑 𝑴𝒂𝒓𝒔𝒉𝒆𝒍 𝑫 𝑺𝒉𝒂𝒅𝒐𝒘 👑
 
 🔥🍸﴿ الجزء ${page} ﴾🍸🔥
 `;
@@ -96,7 +97,7 @@ function getMenuPage(page = 1) {
   });
 
   text += `
-♛ لعرض قائمة أخرى اكتب:  قائمة 2  أو  قائمة 3 …
+♛ ل̶ع̶ر̶ظ̶ ب̶ا̶ق̶ي̶ ا̶ل̶ق̶و̶ا̶ئم̶ ا̶ك̶ت̶ب̶ : ﴿قائمة¹²³﴾ ♛
 
 ★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★
 `;
