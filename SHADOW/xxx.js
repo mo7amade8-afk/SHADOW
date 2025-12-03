@@ -1,54 +1,36 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import img from "./img.js";
+import apk from "./apk.js";
+import aud from "./aud.js";
+import fil from "./fil.js";
+import txt from "./txt.js";
+import lnk from "./lnk.js";
+import gpg from "./Gpg.js";
 
 export class ShadowCore {
   constructor() {
-    this.modules = {};
-    this.loadModules();
-  }
-
-  loadModules() {
-    const shadowPath = path.join(__dirname);
-
-    const files = fs.readdirSync(shadowPath);
-
-    for (const file of files) {
-      if (
-        file.endsWith(".js") &&
-        file !== "xxx.js"
-      ) {
-        const moduleName = file.replace(".js", "");
-        const modulePath = path.join(shadowPath, file);
-
-        import(modulePath).then((mod) => {
-          if (mod && typeof mod.handle === "function") {
-            this.modules[moduleName] = mod;
-            console.log(`[SHADOW] Loaded module: ${moduleName}`);
-          } else {
-            console.warn(`[SHADOW] Skipped (no handler): ${moduleName}`);
-          }
-        });
-      }
-    }
+    this.handlers = {
+      img,
+      apk,
+      aud,
+      fil,
+      txt,
+      lnk,
+      gpg
+    };
   }
 
   async process(data) {
-    const { type } = data;
-
-    if (!type) {
-      throw new Error("Missing type in request.");
+    if (!data || !data.type) {
+      return { error: "No type provided" };
     }
 
-    const module = this.modules[type];
+    const handler = this.handlers[data.type];
 
-    if (!module) {
-      throw new Error(`Module not found: ${type}`);
+    if (!handler) {
+      console.log("[SHADOW] Skipped (no handler):", data.type);
+      return { ok: false, skipped: data.type };
     }
 
-    return await module.handle(data);
+    return await handler(data);
   }
 }
