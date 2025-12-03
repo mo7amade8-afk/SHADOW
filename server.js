@@ -1,56 +1,32 @@
 import express from "express";
-import axios from "axios";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import darkseckt from "./darkseckt.js";
 
 dotenv.config();
-
-// The mastermind controller
-import { handleUpdate } from "./darkseckt.js";
 
 const app = express();
 app.use(bodyParser.json());
 
-const TOKEN = process.env.BOT_TOKEN;
-const API = `https://api.telegram.org/bot${TOKEN}/`;
+// health check
+app.get("/", (req, res) => res.send("OK"));
 
-// Send text message
-async function sendMessage(chatId, text) {
-  await axios.post(API + "sendMessage", {
-    chat_id: chatId,
-    text: text
-  });
-}
-
-// Send media dynamically
-async function sendMedia(chatId, payload) {
-  await axios.post(API + payload.method, {
-    chat_id: chatId,
-    ...payload.data
-  });
-}
-
+// webhook endpoint: forward full update to darkseckt for handling
 app.post("/webhook", async (req, res) => {
-  res.sendStatus(200);
+  res.sendStatus(200); // respond quickly to Telegram
 
-  const message = req.body.message;
-  if (!message) return;
+  try {
+    const update = req.body;
+    if (!update) return;
 
-  const userText = message.text?.trim() || "";
-  const chatId = message.chat.id;
-
-  // Get response from darkseckt.js
-  const result = await handleUpdate(userText, chatId);
-
-  if (!result) return;
-
-  if (result.type === "text") {
-    return sendMessage(chatId, result.text);
-  }
-
-  if (result.type === "media") {
-    return sendMedia(chatId, result);
+    // delegate all logic to darkseckt module
+    // darkseckt.processUpdate(update) should handle everything (no token here)
+    await darkseckt.processUpdate(update);
+  } catch (err) {
+    console.error("Error in /webhook:", err);
   }
 });
 
-app.listen(3000, () => console.log("Server running..."));
+// use PORT from environment (Render provides it)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
