@@ -10,29 +10,22 @@ app.use(bodyParser.json());
 
 const dark = new DarkSystem();
 
-app.get("/", (req, res) => {
-  res.send("Bot server is running.");
-});
-
 app.post("/webhook", async (req, res) => {
   try {
     const data = req.body;
-
     const result = await dark.handleMessage(data);
-
-    res.status(200).json({
-      ok: true,
-      result: result
-    });
-
+    res.json({ ok: true, result });
   } catch (err) {
-    console.error("[SERVER] ERROR:", err);
-    res.status(500).json({ ok: false, error: err.message });
+    console.error("[SERVER ERROR]", err);
+    res.status(500).json({ ok: false, error: "Internal Server Error" });
   }
 });
 
-const PORT = process.env.PORT || 3000;
+app.get("/", (req, res) => {
+  res.send("Bot server is running...");
+});
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(`Server Active on PORT ${PORT}`);
 });
