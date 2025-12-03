@@ -1,4 +1,22 @@
 export default {
-  "جلجامشة": "https://i.ibb.co/cSKV6xVp/gil.jpg",
-  "👑image2": "https://i.ibb.co/HIJKLMN/image2.jpg"
+  cat: [
+    "https://site/cat1.jpg",
+    "https://site/cat2.jpg",
+    "https://site/cat3.jpg"
+  ],
+
+  dog: [
+    "https://site/dog1.jpg",
+    "https://site/dog2.jpg",
+    "https://site/dog3.jpg"
+  ],
+
+  جلجامشة: [
+    "https://i.ibb.co/cSKV6xVp/gil0.jpg",
+    "https://i.ibb.co/xSVFBJMD/gil1.jpg",
+    "https://i.ibb.co/ccp7G4FW/gil2.jpg",
+    "https://i.ibb.co/kVdRcfqj/gil3.jpg",
+    "",
+    ""
+  ]
 };
