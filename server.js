@@ -1,60 +1,38 @@
 import express from "express";
-import chalk from "chalk";
-import figlet from "figlet";
-import gradient from "gradient-string";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import { DarkSystem } from "./darkseckt.js";
 
-// Load main controller
-import DarkSystem from "./darkseckt.js";
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(bodyParser.json());
 
-// Initialize Dark System
-const dark = new DarkSystem(app);
+const dark = new DarkSystem();
 
-// Root endpoint
 app.get("/", (req, res) => {
-    res.send("Shadow Core System Running...");
+  res.send("Bot server is running.");
 });
 
-// Start server
+app.post("/webhook", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const result = await dark.handleMessage(data);
+
+    res.status(200).json({
+      ok: true,
+      result: result
+    });
+
+  } catch (err) {
+    console.error("[SERVER] ERROR:", err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.clear();
-
-    // Fancy banner
-    console.log(
-        gradient(["#ff0066", "#9b00ff"])(
-            figlet.textSync("SHADOW SYSTEM", {
-                font: "ANSI Shadow",
-                horizontalLayout: "default",
-            })
-        )
-    );
-
-    // Decorative lines
-    const deco = gradient(["#ff0040", "#b300ff"])(
-        "★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★"
-    );
-
-    console.log("\n" + deco);
-    console.log(
-        chalk.hex("#ff0040")("Server Status: ") +
-        chalk.hex("#00ff9d")("ONLINE ✨")
-    );
-    console.log(
-        chalk.hex("#9b00ff")("Listening on port: ") +
-        chalk.hex("#00d0ff")(PORT)
-    );
-    console.log(deco + "\n");
-
-    // Log system link if on Render
-    if (process.env.RENDER) {
-        console.log(
-            chalk.hex("#ff00aa")("Render Deployment Active ✔")
-        );
-    }
-
-    console.log(deco);
+  console.log(`Server started on port ${PORT}`);
 });
