@@ -1,4 +1,4 @@
-import { handleAdminImage } from "./adminimage.js";
+import { handleAdminImage } from "../IMAGES/adminimage.js";
 
 export async function handleImageCommand(bot, msg) {
     const args = msg.text.split(" ");
