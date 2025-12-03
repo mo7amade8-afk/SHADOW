@@ -1,10 +1,11 @@
 import { ShadowCore } from "./SHADOW/xxx.js";
 
 export function initDarkController() {
+
   const shadow = new ShadowCore();
 
   return {
-    handleMessage: async (data) => {
+    async handleMessage(data) {
       try {
         const result = await shadow.process(data);
         return result;
