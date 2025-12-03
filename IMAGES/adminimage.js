@@ -1,20 +1,40 @@
-export const AdminImage = async (links, allowedTypes) => {
-    let output = "📸 تم فحص الصور:\n\n";
+import fs from "fs";
+import path from "path";
 
-    for (const url of links) {
-        // فحص الصيغة عبر الامتداد (بسيط وسريع)
-        const ext = url.split(".").pop().toLowerCase();
+export async function handleAdminImage(bot, msg, options) {
+    const basePath = path.resolve("./src/IMAGES");
 
-        const valid =
-            ["jpg","jpeg","png","gif","webp","svg"].includes(ext);
-
-        if (!valid) {
-            output += `❌ الصيغة غير مسموحة: ${url}\n`;
-            continue;
-        }
-
-        output += `✔ تم قبول الصورة: ${url}\n`;
+    // Upload image to report system
+    if (options.type === "upload") {
+        return bot.sendMessage(msg.chat.id, "Image received and ready to process.");
     }
 
-    return output;
-};
+    // Call imageX.js
+    if (options.type === "call") {
+        const filePath = path.join(basePath, `image${options.id}.js`);
+
+        if (!fs.existsSync(filePath)) {
+            return bot.sendMessage(msg.chat.id, `image${options.id}.js not found.`);
+        }
+
+        const module = await import(`../IMAGES/image${options.id}.js`);
+        if (!module.default) {
+            return bot.sendMessage(msg.chat.id, `image${options.id}.js missing default export.`);
+        }
+
+        return module.default(bot, msg);
+    }
+
+    // Album mode: send multiple links
+    if (options.type === "album") {
+        const links = options.links;
+        if (!links.length) return bot.sendMessage(msg.chat.id, "No links provided.");
+
+        const media = links.map(url => ({
+            type: "photo",
+            media: url
+        }));
+
+        return bot.sendMediaGroup(msg.chat.id, media);
+    }
+}
