@@ -6,9 +6,9 @@ export default {
   ],
 
   شيرا: [
-    "فضح_جيجي",
-    "https://site/dog2.jpg",
-    "https://site/dog3.jpg"
+    "https://i.ibb.co/zhmYHZkp/shi0.jpg",
+    "https://i.ibb.co/VWVD1TMR/sh3.jpg",
+    "https://i.ibb.co/FbLb4kHt/sh2.jpg"
   ],
 
   جلجامشة: [
