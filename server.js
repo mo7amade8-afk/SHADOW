@@ -87,7 +87,7 @@ function getMenuPage(page = 1) {
 
   let text = `
 ★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★
-👑 𝑴𝒂𝒓𝒔𝒉𝒆𝒍 𝑫 𝑺𝒉𝒂𝒅𝒐𝒘 👑
+👑 ♤ 𝑴𝒂𝒓𝒔𝒉𝒆𝒍 𝑫 𝑺𝒉𝒂𝒅𝒐𝒘 ♤ 👑
 
 🔥🍸﴿ الجزء ${page} ﴾🍸🔥
 `;
@@ -97,7 +97,8 @@ function getMenuPage(page = 1) {
   });
 
   text += `
-♛ ل̶ع̶ر̶ظ̶ ب̶ا̶ق̶ي̶ ا̶ل̶ق̶و̶ا̶ئم̶ ا̶ك̶ت̶ب̶ : ﴿قائمة¹²³﴾ ♛
+♛٭لعرض باقي القوائم
+ما عليك سوا كتابة: ﴿قائمة¹²³﴾٭♛
 
 ★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★
 `;
@@ -107,7 +108,7 @@ function getMenuPage(page = 1) {
 
 
 // =====================================================
-//  Webhook
+//  
 // =====================================================
 
 app.post("/webhook", async (req, res) => {
@@ -120,26 +121,26 @@ app.post("/webhook", async (req, res) => {
     const chatId = msg.chat.id;
     const text = msg.text?.trim();
 
-    // تشغيل البوت
+    //
     if (text === "/start") {
       return sendMessage(chatId, "Bot is ready");
     }
 
-    // عرض القوائم — مثال: قائمة 1
+    //
     if (text?.startsWith("قائمة")) {
       const parts = text.split(" ");
       const page = parseInt(parts[1]) || 1;
       return sendMessage(chatId, getMenuPage(page));
     }
 
-    // تنفيذ أوامر الملفات
+    // 
     if (images[text]) return sendPhoto(chatId, images[text]);
     if (texts[text]) return sendMessage(chatId, texts[text]);
     if (videos[text]) return sendVideo(chatId, videos[text]);
     if (audios[text]) return sendAudio(chatId, audios[text]);
     if (files[text]) return sendDocument(chatId, files[text]);
 
-    // أمر غير معروف
+    // 
     sendMessage(chatId, "Unknown command ❌");
   } catch (err) {
     console.log("Error:", err);
