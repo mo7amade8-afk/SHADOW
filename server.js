@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// 
 import images from "./image.js";
 import texts from "./text.js";
 import videos from "./video.js";
@@ -18,99 +17,57 @@ app.use(bodyParser.json());
 const TOKEN = process.env.BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOKEN}/`;
 
-// 
+// ======= تخزين حالة المستخدمين =======
+const shadowAccess = {}; // { chatId: true/false }
+
+// ======= إرسال الرسائل =======
 async function sendMessage(chatId, text) {
   await axios.post(API + "sendMessage", {
     chat_id: chatId,
-    text: text
+    text,
   });
 }
 
-// 
 async function sendPhoto(chatId, url) {
-  await axios.post(API + "sendPhoto", {
-    chat_id: chatId,
-    photo: url
-  });
+  await axios.post(API + "sendPhoto", { chat_id: chatId, photo: url });
 }
 
-// 
 async function sendVideo(chatId, url) {
-  await axios.post(API + "sendVideo", {
-    chat_id: chatId,
-    video: url
-  });
+  await axios.post(API + "sendVideo", { chat_id: chatId, video: url });
 }
 
-// 
 async function sendAudio(chatId, url) {
-  await axios.post(API + "sendAudio", {
-    chat_id: chatId,
-    audio: url
-  });
+  await axios.post(API + "sendAudio", { chat_id: chatId, audio: url });
 }
 
-// 
 async function sendDocument(chatId, url) {
-  await axios.post(API + "sendDocument", {
-    chat_id: chatId,
-    document: url
-  });
+  await axios.post(API + "sendDocument", { chat_id: chatId, document: url });
 }
 
+// ======= تجميع الأوامر =======
+const ALL = { ...images, ...texts, ...videos, ...audios, ...files };
+const ALL_KEYS = Object.keys(ALL);
 
-// =====================================================
-//  
-// =====================================================
-
-// 
-const ALL_COMMANDS = {
-  ...images,
-  ...texts,
-  ...videos,
-  ...audios,
-  ...files
-};
-
-// 
-const commandKeys = Object.keys(ALL_COMMANDS);
-
-// 
-function getMenuPage(page = 1) {
-  const perPage = 5;
-  const start = (page - 1) * perPage;
-  const end = start + perPage;
-
-  const slice = commandKeys.slice(start, end);
-
-  if (slice.length === 0) return "❌ لا توجد قائمة بهذا الرقم";
-
-  let text = `
+// ======= القوائم =======
+function getMenu() {
+  let txt = `
 ★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★
-👑 ♤ 𝑴𝒂𝒓𝒔𝒉𝒆𝒍 𝑫 𝑺𝒉𝒂𝒅𝒐𝒘 ♤ 👑
+👑 ♤ طائفة الظلام ♤ 👑
 
-🔥🍸﴿ الجزء ${page} ﴾🍸🔥
+🔥🍸﴿ قائمة السوداء ﴾🍸🔥
 `;
 
-  slice.forEach((cmd, index) => {
-    text += `${start + index + 1} - ${cmd}\n`;
+  ALL_KEYS.forEach((cmd, i) => {
+    txt += `${i + 1} - ${cmd}\n`;
   });
 
-  text += `
-♛٭لعرض باقي القوائم
-ما عليك سوا كتابة: ﴿قائمة¹²³﴾٭♛
-
+  txt += `
 ★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★
 `;
-
-  return text;
+  return txt;
 }
 
-
-// =====================================================
-//  
-// =====================================================
-
+// ======= Webhook =======
 app.post("/webhook", async (req, res) => {
   res.sendStatus(200);
 
@@ -119,31 +76,68 @@ app.post("/webhook", async (req, res) => {
     if (!msg) return;
 
     const chatId = msg.chat.id;
-    const text = msg.text?.trim();
+    const userText = msg.text?.trim();
+    if (!userText) return;
 
-    //
-    if (text === "/start") {
-      return sendMessage(chatId, "Bot is ready");
+    const firstWord = userText.split(" ")[0]; // يأخذ الكلمة الأولى فقط
+
+    // ======= START =======
+    if (firstWord === "/start") {
+      shadowAccess[chatId] = false;
+      return sendMessage(
+        chatId,
+        "شكّل أمر «قائمة السوداء» ليظهر أمامك جميع الأوامر."
+      );
     }
 
-    //
-    if (text?.startsWith("قائمة")) {
-      const parts = text.split(" ");
-      const page = parseInt(parts[1]) || 1;
-      return sendMessage(chatId, getMenuPage(page));
+    // ======= دخول قائمة السوداء =======
+    if (firstWord === "قائمة" || userText === "قائمة السوداء") {
+      shadowAccess[chatId] = false;
+      return sendMessage(
+        chatId,
+        "أدخل كلمة السر… يجب أن تكون ظلاً لدخول قائمة السوداء."
+      );
     }
 
-    // 
-    if (images[text]) return sendPhoto(chatId, images[text]);
-    if (texts[text]) return sendMessage(chatId, texts[text]);
-    if (videos[text]) return sendVideo(chatId, videos[text]);
-    if (audios[text]) return sendAudio(chatId, audios[text]);
-    if (files[text]) return sendDocument(chatId, files[text]);
+    // ======= كلمة السر للطائفة =======
+    if (userText === "shadow/2000") {
+      shadowAccess[chatId] = true;
+      return sendMessage(chatId, getMenu());
+    }
 
-    // 
-    sendMessage(chatId, "Unknown command ❌");
-  } catch (err) {
-    console.log("Error:", err);
+    // ======= التحقق من الدخول =======
+    if (!shadowAccess[chatId]) {
+      return sendMessage(
+        chatId,
+        "لا يجب التسلل بدون دخول إلى قائمة السوداء."
+      );
+    }
+
+    // ======= تنفيذ الأوامر — متعدد الروابط =======
+    const cmd = firstWord;
+
+    if (ALL[cmd]) {
+      const value = ALL[cmd];
+
+      if (Array.isArray(value)) {
+        for (let item of value) {
+          if (images[cmd]) await sendPhoto(chatId, item);
+          else if (videos[cmd]) await sendVideo(chatId, item);
+          else if (audios[cmd]) await sendAudio(chatId, item);
+          else if (files[cmd]) await sendDocument(chatId, item);
+        }
+      } else {
+        if (images[cmd]) return sendPhoto(chatId, value);
+        if (texts[cmd]) return sendMessage(chatId, value);
+        if (videos[cmd]) return sendVideo(chatId, value);
+        if (audios[cmd]) return sendAudio(chatId, value);
+        if (files[cmd]) return sendDocument(chatId, value);
+      }
+    }
+
+    return sendMessage(chatId, "يالك من غبي تافه من سمح لك بالوصول الى هنا 🤨😆");
+  } catch (e) {
+    console.log("ERROR:", e);
   }
 });
 
