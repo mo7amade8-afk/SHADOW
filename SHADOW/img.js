@@ -1,39 +1,24 @@
-import { AdminImage } from "../IMAGES/adminimage.js";
+import { handleAdminImage } from "./adminimage.js";
 
-// 
-const allowedTypes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-    "image/svg+xml"
-];
+export async function handleImageCommand(bot, msg) {
+    const args = msg.text.split(" ");
+    const command = args[0];
+    const imageArg = args[1];
 
-// 
-export const ImageHandler = {
-    name: "img",
-    aliases: ["image", "sendimage"],
-
-    run: async (client, message, args) => {
-        try {
-            //
-            if (!args[0]) {
-                return message.reply("أرسل رابط صورة واحد أو أكثر");
-            }
-
-            // 
-            const links = args;
-
-            // 
-            const result = await AdminImage(links, allowedTypes);
-
-            // 
-            return message.reply(result);
-
-        } catch (err) {
-            console.error(err);
-            return message.reply("⚠");
-        }
+    // Accept any image format: png, jpg, jpeg, gif, webp, ai
+    if (msg.photo || msg.document || msg.animation) {
+        return handleAdminImage(bot, msg, { type: "upload" });
     }
-};
+
+    // /image 1  → calls image1.js
+    if (command === "/image" && imageArg) {
+        return handleAdminImage(bot, msg, { type: "call", id: imageArg });
+    }
+
+    // /album + links
+    if (command === "/album") {
+        return handleAdminImage(bot, msg, { type: "album", links: args.slice(1) });
+    }
+
+    return bot.sendMessage(msg.chat.id, "Invalid image command.");
+}
