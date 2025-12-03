@@ -1,18 +1,18 @@
 import { ShadowCore } from "./SHADOW/xxx.js";
 
-export function initDarkController() {
+export class DarkSystem {
+  constructor() {
+    console.log("[DARKSECKT] Loaded");
+    this.shadow = new ShadowCore();
+  }
 
-  const shadow = new ShadowCore();
-
-  return {
-    async handleMessage(data) {
-      try {
-        const result = await shadow.process(data);
-        return result;
-      } catch (err) {
-        console.error("[DARKSECKT] Error:", err);
-        throw err;
-      }
+  async handleMessage(data) {
+    try {
+      const result = await this.shadow.process(data);
+      return result;
+    } catch (err) {
+      console.error("[DARKSECKT ERROR]", err);
+      throw err;
     }
-  };
+  }
 }
