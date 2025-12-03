@@ -1,22 +1,20 @@
-export default {
-  جيجي: [
-    "https://site/cat1.jpg",
-    "https://site/cat2.jpg",
-    "https://site/cat3.jpg"
-  ],
+export const AdminImage = async (links, allowedTypes) => {
+    let output = "📸 تم فحص الصور:\n\n";
 
-  شيرا: [
-    "https://i.ibb.co/zhmYHZkp/shi0.jpg",
-    "https://i.ibb.co/VWVD1TMR/sh3.jpg",
-    "https://i.ibb.co/FbLb4kHt/sh2.jpg"
-  ],
+    for (const url of links) {
+        // فحص الصيغة عبر الامتداد (بسيط وسريع)
+        const ext = url.split(".").pop().toLowerCase();
 
-  جلجامشة: [
-    "https://i.ibb.co/cSKV6xVp/gil0.jpg",
-    "https://i.ibb.co/xSVFBJMD/gil1.jpg",
-    "https://i.ibb.co/ccp7G4FW/gil2.jpg",
-    "https://i.ibb.co/kVdRcfqj/gil3.jpg",
-    "",
-    ""
-  ]
+        const valid =
+            ["jpg","jpeg","png","gif","webp","svg"].includes(ext);
+
+        if (!valid) {
+            output += `❌ الصيغة غير مسموحة: ${url}\n`;
+            continue;
+        }
+
+        output += `✔ تم قبول الصورة: ${url}\n`;
+    }
+
+    return output;
 };
