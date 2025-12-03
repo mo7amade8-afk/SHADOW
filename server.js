@@ -1,32 +1,60 @@
 import express from "express";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import darkseckt from "./darkseckt.js";
+import chalk from "chalk";
+import figlet from "figlet";
+import gradient from "gradient-string";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
-dotenv.config();
+// Load main controller
+import DarkSystem from "./darkseckt.js";
 
 const app = express();
-app.use(bodyParser.json());
+const PORT = process.env.PORT || 3000;
 
-// health check
-app.get("/", (req, res) => res.send("OK"));
+// Initialize Dark System
+const dark = new DarkSystem(app);
 
-// webhook endpoint: forward full update to darkseckt for handling
-app.post("/webhook", async (req, res) => {
-  res.sendStatus(200); // respond quickly to Telegram
-
-  try {
-    const update = req.body;
-    if (!update) return;
-
-    // delegate all logic to darkseckt module
-    // darkseckt.processUpdate(update) should handle everything (no token here)
-    await darkseckt.processUpdate(update);
-  } catch (err) {
-    console.error("Error in /webhook:", err);
-  }
+// Root endpoint
+app.get("/", (req, res) => {
+    res.send("Shadow Core System Running...");
 });
 
-// use PORT from environment (Render provides it)
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+// Start server
+app.listen(PORT, () => {
+    console.clear();
+
+    // Fancy banner
+    console.log(
+        gradient(["#ff0066", "#9b00ff"])(
+            figlet.textSync("SHADOW SYSTEM", {
+                font: "ANSI Shadow",
+                horizontalLayout: "default",
+            })
+        )
+    );
+
+    // Decorative lines
+    const deco = gradient(["#ff0040", "#b300ff"])(
+        "★.･*:｡≻──── ⋆☆⋆ ────.•*:｡★"
+    );
+
+    console.log("\n" + deco);
+    console.log(
+        chalk.hex("#ff0040")("Server Status: ") +
+        chalk.hex("#00ff9d")("ONLINE ✨")
+    );
+    console.log(
+        chalk.hex("#9b00ff")("Listening on port: ") +
+        chalk.hex("#00d0ff")(PORT)
+    );
+    console.log(deco + "\n");
+
+    // Log system link if on Render
+    if (process.env.RENDER) {
+        console.log(
+            chalk.hex("#ff00aa")("Render Deployment Active ✔")
+        );
+    }
+
+    console.log(deco);
+});
